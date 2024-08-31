@@ -16,19 +16,7 @@ function vscode.generateProject(prj)
     p.eol("\r\n")    
     p.indent("\t")
 
-	local isLaunchable = false
-
-	for cfg in project.eachconfig(prj) do
-		isLaunchable = cfg.kind == "ConsoleApp" or cfg.kind == "WindowedApp"
-
-		if isLaunchable then
-			break
-		end
-	end
-
-	if isLaunchable then
-		p.generate(prj, prj.location .. "/.vscode/launch.json", vscode.project.launch.generate)
-	end
+    p.generate(wks, wks.basedir .. "/.vscode/launch.json", vscode.workspace.launch.generate)
 end
 
 function vscode.configName(config, includePlatform)

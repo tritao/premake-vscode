@@ -6,6 +6,7 @@ local vscode = p.modules.vscode
 
 vscode.workspace = {}
 vscode.workspace.tasks = {}
+vscode.workspace.launch = {}
 
 local m = vscode.workspace
 
@@ -127,4 +128,30 @@ function tasks.generate(wks)
     p.pop(']')
     p.pop('}')
 end
+
+local launch = vscode.workspace.launch
+
+function launch.generate(wks)
+    p.push('{')
+    p.w('"version": "0.2.0",')
+    p.push('"configurations": [')
+
+    for prj in workspace.eachproject(wks) do
+        local isLaunchable = false
+        for cfg in project.eachconfig(prj) do
+            isLaunchable = cfg.kind == "ConsoleApp" or cfg.kind == "WindowedApp"
+            if isLaunchable then
+                break
+            end
+        end
+
+        if isLaunchable then
+            vscode.project.launch.generate(prj)
+        end
+    end
+
+    p.pop(']')
+    p.pop('}')
+end
+
 
