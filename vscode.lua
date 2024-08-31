@@ -16,10 +16,6 @@ function vscode.generateProject(prj)
     p.eol("\r\n")    
     p.indent("\t")
 
-    if (project.isc(prj) or project.iscpp(prj)) then
-        p.generate(prj, prj.location .. "/.vscode/c_cpp_properties.json", vscode.project.cCppProperties.generate)
-    end
-
 	local isLaunchable = false
 
 	for cfg in project.eachconfig(prj) do
