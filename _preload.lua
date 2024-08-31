@@ -18,23 +18,10 @@ newaction {
     valid_languages = { "C", "C++", "C#" },
     valid_tools = { "gcc", "clang", "msc" },
 
-    onStart = function()
-        if _TARGET_OS == "windows" then
-            os.execute(_PREMAKE_COMMAND .. " vs2022")
-        else
-            os.execute(_PREMAKE_COMMAND .. " gmake2")
-        end
-    end,
-
     -- Workspace Generation
     onWorkspace = function(wks)
         p.modules.vscode.generateWorkspace(wks)
     end,
-
-    -- Project Generation
-    onProject = function(prj)
-        p.modules.vscode.generateProject(prj)
-    end
 }
 
 return function(cfg)
