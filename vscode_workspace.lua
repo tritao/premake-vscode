@@ -67,15 +67,40 @@ function tasks.buildSolutionTask(wks)
 end
 
 function tasks.buildMakefileTask(wks)
+    local builddir = path.getrelative(wks.basedir, wks.location)
+    local vscode_builddir = path.join("${workspaceFolder}", builddir)
+
     for cfg in workspace.eachconfig(wks) do
         p.push('{')
         p.w('"type": "shell",')
         p.w('"label": "Build All (%s)",', cfg.name)
         p.w('"command": "make",')
-        p.w('"args": ["-j$((`nproc` - 1))", "config=%s"],', cfg.name)
-        p.w('"problemMatcher": "$gcc",')
+        p.w('"args": ["config=%s", "-C", "%s"],', cfg.shortname, vscode_builddir)
+        p.w('"problemMatcher": {')
+        p.push('')
+        p.w('"base": "$gcc",')
+        p.w('"fileLocation": ["relative", "%s"],', vscode_builddir)
+        p.pop('},')
         p.w('"group": "build"')
         p.pop('},')
+    end
+
+    for prj in workspace.eachproject(wks) do
+        for cfg in project.eachconfig(prj) do
+            p.push('{')
+            p.w('"type": "shell",')
+            p.w('"label": "Build %s (%s)",', prj.name, cfg.name)
+            p.w('"command": "make",')
+            p.w('"args": ["config=%s", "-C", "%s", "%s"],',
+                cfg.shortname, path.join("${workspaceFolder}", builddir), prj.name)
+            p.w('"problemMatcher": {')
+            p.push('')
+            p.w('"base": "$gcc",')
+            p.w('"fileLocation": ["relative", "%s"],', vscode_builddir)
+            p.pop('},')
+            p.w('"group": "build"')
+            p.pop('},')
+        end
     end
 end
 
@@ -102,3 +127,4 @@ function tasks.generate(wks)
     p.pop(']')
     p.pop('}')
 end
+
